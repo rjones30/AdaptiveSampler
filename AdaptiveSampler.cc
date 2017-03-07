@@ -386,47 +386,55 @@ int AdaptiveSampler::recursively_update(std::vector<int> index)
                          << "best_sum_wI2 > old sum_wI2, this cannot be!"
                          << std::endl;
             }
-            double f[3];
-            f[0] = sqrt(new_sum_wI2u[0][best_axis]);
-            f[1] = sqrt(new_sum_wI2u[1][best_axis]);
-            f[2] = sqrt(new_sum_wI2u[2][best_axis]);
-            double fmin = (f[0] + f[1] + f[2]) * 1e-3;
-            f[0] = (f[0] < fmin)? fmin : f[0];
-            f[1] = (f[1] < fmin)? fmin : f[1];
-            f[2] = (f[2] < fmin)? fmin : f[2];
-            double fsum = f[0] + f[1] + f[2];
-            cell->divAxis = best_axis;
-            for (int n=0; n < 3; ++n) {
-               cell->subcell[n] = new Cell(fNdim);
-               cell->subcell[n]->subset = f[n]/fsum * cell->subset;
-               cell->subcell[n]->nhit = f[n]/fsum * cell->nhit;
-               cell->subcell[n]->sum_wI = cell->sum_wI / 3;
-               cell->subcell[n]->sum_wI2 = new_sum_wI2u[n][best_axis] /
-                                           (3 * f[n]/fsum);
-            }
-            cell->nhit = 0;
-            cell->sum_wI = 0;
-            cell->sum_wI2 = 0;
-
-            if (verbosity > 2) {
-               std::cout << "splitting this cell[";
-               for (unsigned int i=0; i < depth; i++) {
-                  std::cout << ((i > 0)? "," : "") << index[i];
+            else if (best_sum_wI2u > 0) {
+               double f[3];
+               f[0] = sqrt(new_sum_wI2u[0][best_axis]);
+               f[1] = sqrt(new_sum_wI2u[1][best_axis]);
+               f[2] = sqrt(new_sum_wI2u[2][best_axis]);
+               double fmin = (f[0] + f[1] + f[2]) * 1e-3;
+               f[0] = (f[0] < fmin)? fmin : f[0];
+               f[1] = (f[1] < fmin)? fmin : f[1];
+               f[2] = (f[2] < fmin)? fmin : f[2];
+               double fsum = f[0] + f[1] + f[2];
+               cell->divAxis = best_axis;
+               for (int n=0; n < 3; ++n) {
+                  cell->subcell[n] = new Cell(fNdim);
+                  cell->subcell[n]->subset = f[n]/fsum * cell->subset;
+                  cell->subcell[n]->nhit = f[n]/fsum * cell->nhit;
+                  cell->subcell[n]->sum_wI = cell->sum_wI / 3;
+                  cell->subcell[n]->sum_wI2 = new_sum_wI2u[n][best_axis] /
+                                              (3 * f[n]/fsum);
                }
-               std::cout << "] along axis " << best_axis << std::endl;
-               std::cout << "f0,f1,f2=" 
-                         << f[0] << "," << f[1] << "," << f[2] << std::endl;
-               std::cout << " with subsets " 
-                         << cell->subcell[0]->subset << ", "
-                         << cell->subcell[1]->subset << ", "
-                         << cell->subcell[2]->subset
-                         << " with fractions " 
-                         << f[0]/fsum << " / " 
-                         << f[1]/fsum << " / " 
-                         << f[2]/fsum
-                         << std::endl;
+               cell->nhit = 0;
+               cell->sum_wI = 0;
+               cell->sum_wI2 = 0;
+
+               if (verbosity > 2) {
+                  std::cout << "splitting this cell[";
+                  for (unsigned int i=0; i < depth; i++) {
+                     std::cout << ((i > 0)? "," : "") << index[i];
+                  }
+                  std::cout << "] along axis " << best_axis << std::endl;
+                  std::cout << "f0,f1,f2=" 
+                            << f[0] << "," << f[1] << "," << f[2] 
+                            << std::endl;
+                  std::cout << " with subsets " 
+                            << cell->subcell[0]->subset << ", "
+                            << cell->subcell[1]->subset << ", "
+                            << cell->subcell[2]->subset
+                            << " with fractions " 
+                            << f[0]/fsum << " / " 
+                            << f[1]/fsum << " / " 
+                            << f[2]/fsum
+                            << std::endl;
+               }
+               count += 1;
             }
-            count += 1;
+            else {
+               if (verbosity > 5) {
+                  std::cout << "nope!" << std::endl;
+               }
+            }
          }
          else {
             if (verbosity > 5) {
