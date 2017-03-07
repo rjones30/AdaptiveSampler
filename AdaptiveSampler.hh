@@ -148,8 +148,8 @@ class AdaptiveSampler {
  protected:
    int fNdim;
    Uniform01 fRandom;
-   int fMaximum_depth;
-   int fMaximum_cells;
+   unsigned int fMaximum_depth;
+   unsigned int fMaximum_cells;
    double fSampling_threshold;
    double fEfficiency_target;
    double fMinimum_sum_wI2_delta;

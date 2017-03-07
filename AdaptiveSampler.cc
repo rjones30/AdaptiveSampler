@@ -307,7 +307,7 @@ int AdaptiveSampler::adapt()
 int AdaptiveSampler::recursively_update(std::vector<int> index)
 {
    Cell *cell = fTopCell;
-   int depth;
+   unsigned int depth;
    for (depth=0; depth < index.size(); ++depth) {
       cell = cell->subcell[index[depth]];
    }
@@ -340,7 +340,8 @@ int AdaptiveSampler::recursively_update(std::vector<int> index)
          double new_sum_wI2 = 0;
          double new_sum_wI2u[3][fNdim];
          std::fill(new_sum_wI2u[0], new_sum_wI2u[0] + 3*fNdim, 0);
-         int jbase3[fNdim] = {};
+         int jbase3[fNdim];
+         std::fill(jbase3, jbase3 + fNdim, 0);
          for (int i=0; i < dim3; ++i) {
             new_sum_wI2 += sqrt(cell->sum_wI2u[i]);
             for (int j = 0; j < fNdim; ++j) {
@@ -409,7 +410,7 @@ int AdaptiveSampler::recursively_update(std::vector<int> index)
 
             if (verbosity > 2) {
                std::cout << "splitting this cell[";
-               for (int i=0; i < depth; i++) {
+               for (unsigned int i=0; i < depth; i++) {
                   std::cout << ((i > 0)? "," : "") << index[i];
                }
                std::cout << "] along axis " << best_axis << std::endl;
@@ -555,7 +556,7 @@ void AdaptiveSampler::setAdaptation_maximum_cells(int ncells)
 
 int AdaptiveSampler::getAdaptation_maximum_cells() const
 {
-   fMaximum_cells;
+   return fMaximum_cells;
 }
 
 void AdaptiveSampler::rebalance_tree()
@@ -592,7 +593,7 @@ double AdaptiveSampler::display_tree(Cell *cell, double subset, int level,
       std::cout << "(100%) ";
    }
    else {
-      snprintf(numeric, 30, "(%4.1f%) ", 100 * cell->subset / subset);
+      snprintf(numeric, 30, "(%4.1f) ", 100 * cell->subset / subset);
       std::cout << numeric;
    }
 
