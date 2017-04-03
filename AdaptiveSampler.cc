@@ -370,7 +370,7 @@ int AdaptiveSampler::recursively_update(std::vector<int> index)
                       << std::endl;
          }
          if (sum_wI2_delta > fMinimum_sum_wI2_delta) {
-            int best_axis;
+            int best_axis = -1;
             double best_sum_wI2u = 1e99;
             for (int n=0; n < fNdim; ++n) {
                double sum_wI2u = pow(sqrt(new_sum_wI2u[0][n]) +
@@ -501,7 +501,10 @@ double AdaptiveSampler::getEfficiency() const
    double sum_wI2 = 0;
    double sum_wI2s = 0;
    fTopCell->sum_stats(nhit, sum_wI, sum_wI2, sum_wI2s);
-   return sum_wI * sum_wI / (sum_wI2 * nhit);
+   if (nhit > 0)
+      return sum_wI * sum_wI / (sum_wI2 * nhit);
+   else
+      return 0;
 }
 
 double AdaptiveSampler::getResult(double *error) const
